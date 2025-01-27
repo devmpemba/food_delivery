@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery/restaurant_screen.dart';
+import 'package:food_delivery/widgets/category_card.dart';
 import 'package:get/get.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -14,10 +15,7 @@ class HomeScreen extends StatelessWidget {
             SizedBox(width: 8),
             Text("Dar es salaam, Makumbusho",
                 style: TextStyle(
-                    fontSize: 17,
-                    color: Colors.white,
-                    fontFamily: "Mulish"
-                )),
+                    fontSize: 17, color: Colors.white, fontFamily: "Mulish")),
           ],
         ),
         actions: [
@@ -52,7 +50,10 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               "Popular Categories",
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, fontFamily: "Mulish"),
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Mulish"),
             ),
           ),
           Container(
@@ -64,7 +65,6 @@ class HomeScreen extends StatelessWidget {
                 CategoryCard("Drinks"),
                 CategoryCard("Snacks"),
                 CategoryCard("Beer"),
-
               ],
             ),
           ),
@@ -72,107 +72,65 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               "Nearby Restaurants",
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, fontFamily: "Mulish"),
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Mulish"),
             ),
           ),
 
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
 
-          // Expanded(
-          //   child: ListView(
-          //     shrinkWrap: true,
-          //     physics: NeverScrollableScrollPhysics(),
-          //     children: [
-          //       GestureDetector(
-          //         onTap: () {
-          //          // You can navigate to another screen, for example:
-          //           Navigator.push(context, MaterialPageRoute(builder: (context) => RestaurantScreen()));
-          //         },
-          //         child: RestaurantCard("Raj Palace Restaurant", "50% OFF"),
-          //       ),
-          //
-          //     ],
-          //   ),
-          // ),
+
 
           Expanded(
             child: ListView(
-            padding: EdgeInsets.all(10),
-            children: [
-              createShopCard(
-                imageUrl: 'https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/092014/ticker_restaurant.png',
-                name: 'TIGO SHOP',
-                address: 'Jukwani Street, Dar es Salaam, Tanzania',
-                deliveryFee: 'TZS 3,000 • 60min • 1 Km',
-              ),
-              createShopCard(
-                imageUrl: 'https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/092014/ticker_restaurant.png',
-                name: 'Chinese Lanzhou Restaurant',
-                address: 'Shoppers Plaza, Mikocheni, Dar es Salaam, Tanzania',
-                deliveryFee: 'TZS 3,000 • 0min • 1 Km',
-              ),
-              createShopCard(
-                imageUrl: 'https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/092014/ticker_restaurant.png',
-                name: "Pizza Hut Shopper's Plaza",
-                address: 'Pizza Hut, Mwai Kibaki Road, Dar es Salaam, Tanzania',
-                deliveryFee: 'TZS 3,000 • 45min • 2 Km',
-              ),
-            ],
-          ),
+              padding: EdgeInsets.all(10),
+              children: [
+                createShopCard(
+                  imageUrl:
+                      'https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/092014/ticker_restaurant.png',
+                  name: 'TIGO SHOP',
+                  address: 'Jukwani Street, Dar es Salaam, Tanzania',
+                  deliveryFee: 'TZS 3,000 • 60min • 1 Km',
+                ),
+                createShopCard(
+                  imageUrl:
+                      'https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/092014/ticker_restaurant.png',
+                  name: 'Chinese Lanzhou Restaurant',
+                  address: 'Shoppers Plaza, Mikocheni, Dar es Salaam, Tanzania',
+                  deliveryFee: 'TZS 3,000 • 0min • 1 Km',
+                ),
+                createShopCard(
+                  imageUrl:
+                      'https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/092014/ticker_restaurant.png',
+                  name: "Pizza Hut Shopper's Plaza",
+                  address:
+                      'Pizza Hut, Mwai Kibaki Road, Dar es Salaam, Tanzania',
+                  deliveryFee: 'TZS 3,000 • 45min • 2 Km',
+                ),
+              ],
+            ),
           )
-
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.location_on), label: "Nearby"),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "Cart"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.location_on), label: "Nearby"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart), label: "Cart"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
     );
   }
-
-
 }
 
 
-
-class CategoryCard extends StatelessWidget {
-  final String name;
-  CategoryCard(this.name);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      width: 80,
-      child: Column(
-        children: [
-          Container(
-            width: 60, // Set the size for the avatar with the border
-            height: 60,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.red, // Set your desired border color
-                width: 2, // Set the border width
-              ),
-            ),
-            child: CircleAvatar(
-              radius: 30,
-              backgroundImage: AssetImage('assets/images/kfc.png'),
-            ),
-          ),
-          SizedBox(height: 5),
-          Text(name, style: TextStyle(fontFamily: "Mulish")),
-        ],
-      ),
-    );
-
-  }
-}
 
 Widget createShopCard({
   required String imageUrl,
@@ -187,14 +145,15 @@ Widget createShopCard({
       children: [
         Stack(
           children: [
-            Image.network(imageUrl, width: double.infinity, height: 150, fit: BoxFit.cover),
+            Image.network(imageUrl,
+                width: double.infinity, height: 150, fit: BoxFit.cover),
             Positioned(
               top: 10,
               left: 10,
               child: Container(
                 color: Colors.yellowAccent,
                 padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                child: Text('🏆', style: TextStyle(fontSize: 20)),
+                child: Text('Logo', style: TextStyle(fontSize: 20)),
               ),
             ),
           ],
@@ -204,12 +163,17 @@ Widget createShopCard({
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              Text(name, style: TextStyle(fontFamily: "Mulish",fontSize: 20, fontWeight: FontWeight.bold)),
+              Text(name,
+                  style: TextStyle(
+                      fontFamily: "Mulish",
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold)),
               SizedBox(height: 4),
-              Text(address, style: TextStyle(fontFamily: "Mulish",color: Colors.grey)),
+              Text(address,
+                  style: TextStyle(fontFamily: "Mulish", color: Colors.grey)),
               SizedBox(height: 4),
-              Text(deliveryFee, style: TextStyle(fontFamily: "Mulish",color: Colors.grey)),
+              Text(deliveryFee,
+                  style: TextStyle(fontFamily: "Mulish", color: Colors.grey)),
             ],
           ),
         ),
@@ -223,23 +187,4 @@ Widget createShopCard({
       ],
     ),
   );
-}
-
-class RestaurantCard extends StatelessWidget {
-  final String name;
-  final String offer;
-  RestaurantCard(this.name, this.offer);
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: AssetImage('assets/images/mudi.jpg'),
-        ),
-        title: Text(name, style: TextStyle(fontFamily: "Mulish", fontWeight: FontWeight.bold),),
-        subtitle: Text(offer, style: TextStyle(fontFamily: "Mulish"),),
-      ),
-    );
-  }
 }
