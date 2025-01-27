@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery/restaurant_screen.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -77,22 +78,22 @@ class HomeScreen extends StatelessWidget {
 
           SizedBox(height: 10,),
 
-          Expanded(
-            child: ListView(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              children: [
-                GestureDetector(
-                  onTap: () {
-                   // You can navigate to another screen, for example:
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => RestaurantScreen()));
-                  },
-                  child: RestaurantCard("Raj Palace Restaurant", "50% OFF"),
-                ),
-
-              ],
-            ),
-          ),
+          // Expanded(
+          //   child: ListView(
+          //     shrinkWrap: true,
+          //     physics: NeverScrollableScrollPhysics(),
+          //     children: [
+          //       GestureDetector(
+          //         onTap: () {
+          //          // You can navigate to another screen, for example:
+          //           Navigator.push(context, MaterialPageRoute(builder: (context) => RestaurantScreen()));
+          //         },
+          //         child: RestaurantCard("Raj Palace Restaurant", "50% OFF"),
+          //       ),
+          //
+          //     ],
+          //   ),
+          // ),
 
           Expanded(
             child: ListView(
@@ -119,30 +120,6 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
           )
-
-          // ListView(
-          //   padding: EdgeInsets.all(10),
-          //   children: [
-          //     createShopCard(
-          //       imageUrl: 'https://example.com/shop1.png',
-          //       name: 'TIGO SHOP',
-          //       address: 'Jukwani Street, Dar es Salaam, Tanzania',
-          //       deliveryFee: 'TZS 3,000 • 60min • 1 Km',
-          //     ),
-          //     createShopCard(
-          //       imageUrl: 'https://example.com/shop2.png',
-          //       name: 'Chinese Lanzhou Restaurant',
-          //       address: 'Shoppers Plaza, Mikocheni, Dar es Salaam, Tanzania',
-          //       deliveryFee: 'TZS 3,000 • 0min • 1 Km',
-          //     ),
-          //     createShopCard(
-          //       imageUrl: 'https://example.com/shop3.png',
-          //       name: "Pizza Hut Shopper's Plaza",
-          //       address: 'Pizza Hut, Mwai Kibaki Road, Dar es Salaam, Tanzania',
-          //       deliveryFee: 'TZS 3,000 • 45min • 2 Km',
-          //     ),
-          //   ],
-          // ),
 
         ],
       ),
@@ -227,17 +204,21 @@ Widget createShopCard({
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+
+              Text(name, style: TextStyle(fontFamily: "Mulish",fontSize: 20, fontWeight: FontWeight.bold)),
               SizedBox(height: 4),
-              Text(address, style: TextStyle(color: Colors.grey)),
+              Text(address, style: TextStyle(fontFamily: "Mulish",color: Colors.grey)),
               SizedBox(height: 4),
-              Text(deliveryFee, style: TextStyle(color: Colors.grey)),
+              Text(deliveryFee, style: TextStyle(fontFamily: "Mulish",color: Colors.grey)),
             ],
           ),
         ),
         IconButton(
           icon: Icon(Icons.favorite_border),
-          onPressed: () {},
+          onPressed: () {
+            Get.to(RestaurantScreen());
+            // Navigator.push(context, MaterialPageRoute(builder: (context) => RestaurantScreen()));
+          },
         ),
       ],
     ),
