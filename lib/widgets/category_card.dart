@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class CategoryCard extends StatelessWidget {
@@ -28,7 +27,13 @@ class CategoryCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: 5),
-          Text(name, style: TextStyle(fontFamily: "Mulish")),
+          Text(
+            name
+                .split(' ')
+                .map((word) => word[0].toUpperCase() + word.substring(1))
+                .join(' '),
+            style: TextStyle(fontFamily: "Mulish"),
+          ),
         ],
       ),
     );

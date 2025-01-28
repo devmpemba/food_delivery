@@ -1,9 +1,130 @@
 import 'package:flutter/material.dart';
+import 'package:food_delivery/model/category.dart';
+import 'package:food_delivery/model/restaurant.dart';
 import 'package:food_delivery/restaurant_screen.dart';
 import 'package:food_delivery/widgets/category_card.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:geocoding/geocoding.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String _currentAddress = "Loading...";
+  List<Category> categories = [];
+  List<Restaurants> restaurants = [];
+  bool isLoading = true;
+
+  Future<void> fetchRestaurants() async {
+    try {
+      final response = await http
+          .get(Uri.parse('https://msosi.dawadirect.co.tz/api/restaurants'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['data'] as List;
+        setState(() {
+          restaurants = data.map((item) => Restaurants.fromJson(item)).toList();
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load restaurants');
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  // Fetch categories from the API
+  Future<void> fetchCategories() async {
+    try {
+      final response = await http
+          .get(Uri.parse('https://msosi.dawadirect.co.tz/api/foods/category'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['data'] as List;
+        setState(() {
+          categories = data.map((item) => Category.fromJson(item)).toList();
+          isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load categories');
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+    fetchCategories();
+    fetchRestaurants();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      setState(() {
+        _currentAddress = "Location services are disabled";
+      });
+      return;
+    }
+
+    // Check for location permissions
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        setState(() {
+          _currentAddress = "Location permission denied";
+        });
+        return;
+      }
+    }
+
+    // Get the current position
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    // Get the address from the coordinates
+    await _getAddressFromLatLng(position.latitude, position.longitude);
+  }
+
+  Future<void> _getAddressFromLatLng(double latitude, double longitude) async {
+    try {
+      //GET LOCATION NAME from latitude and longitude
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        setState(() {
+          _currentAddress =
+              "${place.name}, ${place.locality}, ${place.administrativeArea}";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _currentAddress = "Failed to get address: $e";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,7 +134,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             Icon(Icons.location_on, color: Colors.white),
             SizedBox(width: 8),
-            Text("Dar es salaam, Makumbusho",
+            Text(_currentAddress,
                 style: TextStyle(
                     fontSize: 17, color: Colors.white, fontFamily: "Mulish")),
           ],
@@ -58,15 +179,16 @@ class HomeScreen extends StatelessWidget {
           ),
           Container(
             height: 130,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                CategoryCard("Burger"),
-                CategoryCard("Drinks"),
-                CategoryCard("Snacks"),
-                CategoryCard("Beer"),
-              ],
-            ),
+            child: isLoading
+                ? Center(child: CircularProgressIndicator())
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: categories
+                          .map((category) => CategoryCard(category.name))
+                          .toList(),
+                    ),
+                  ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -78,42 +200,26 @@ class HomeScreen extends StatelessWidget {
                   fontFamily: "Mulish"),
             ),
           ),
-
           SizedBox(
             height: 10,
           ),
-
-
-
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(10),
-              children: [
-                createShopCard(
-                  imageUrl:
-                      'https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/092014/ticker_restaurant.png',
-                  name: 'TIGO SHOP',
-                  address: 'Jukwani Street, Dar es Salaam, Tanzania',
-                  deliveryFee: 'TZS 3,000 • 60min • 1 Km',
+          isLoading
+              ? Center(child: CircularProgressIndicator())
+              : Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.all(10),
+                    itemCount: restaurants.length,
+                    itemBuilder: (context, index) {
+                      final restaurant = restaurants[index];
+                      return createShopCard(
+                        imageUrl: restaurant.businessLogo,
+                        name: restaurant.name,
+                        address: restaurant.streetAddress,
+                        deliveryFee: restaurant.city,
+                      );
+                    },
+                  ),
                 ),
-                createShopCard(
-                  imageUrl:
-                      'https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/092014/ticker_restaurant.png',
-                  name: 'Chinese Lanzhou Restaurant',
-                  address: 'Shoppers Plaza, Mikocheni, Dar es Salaam, Tanzania',
-                  deliveryFee: 'TZS 3,000 • 0min • 1 Km',
-                ),
-                createShopCard(
-                  imageUrl:
-                      'https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/092014/ticker_restaurant.png',
-                  name: "Pizza Hut Shopper's Plaza",
-                  address:
-                      'Pizza Hut, Mwai Kibaki Road, Dar es Salaam, Tanzania',
-                  deliveryFee: 'TZS 3,000 • 45min • 2 Km',
-                ),
-              ],
-            ),
-          )
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -130,8 +236,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-
-
 Widget createShopCard({
   required String imageUrl,
   required String name,
@@ -147,15 +251,15 @@ Widget createShopCard({
           children: [
             Image.network(imageUrl,
                 width: double.infinity, height: 150, fit: BoxFit.cover),
-            Positioned(
-              top: 10,
-              left: 10,
-              child: Container(
-                color: Colors.yellowAccent,
-                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                child: Text('Logo', style: TextStyle(fontSize: 20)),
-              ),
-            ),
+            // Positioned(
+            //   top: 10,
+            //   left: 10,
+            //   child: Container(
+            //     color: Colors.yellowAccent,
+            //     padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+            //     child: Text('Logo', style: TextStyle(fontSize: 20)),
+            //   ),
+            // ),
           ],
         ),
         Padding(
